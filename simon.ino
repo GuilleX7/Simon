@@ -1,5 +1,5 @@
 //  Simon - Simon game made with Arduino
-//  Copyright (C) 2018 Guillermo Diz
+//  Copyright (C) 2018-2019 GuilleX7
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -17,6 +17,11 @@
 #include <TimerOne.h>
 #include <MultiFuncShield.h>
 
+// USER INFORMATION!!: CHANGE THIS FROM 1 (sound on) TO 0 (sound off) IN ORDER TO PLAY IN SILENCE.
+#define SOUND 0
+// Beep sound could be annoying depending on your buzzer, so it's up to you to disable beeping.
+
+//Feel free to change all these values :)
 const char LEDS[3] = {10, 11, 12};
 const char BTNS[3] = {A1, A2, A3};
 const int NOTES[3] = {2093, 2349, 2637};
@@ -39,7 +44,7 @@ char* userMap;
 void setup() {
   Timer1.initialize();
   MFS.initialize(&Timer1);
-  
+
   for (int i = 0; i < LEDN; i++) {
     pinMode(LEDS[i], OUTPUT);
     digitalWrite(LEDS[i], HIGH);
@@ -50,7 +55,7 @@ void setup() {
   }
 
   pinMode(BUZZER, OUTPUT);
-  
+
   pinMode(13, OUTPUT);
   digitalWrite(13, HIGH);
 
@@ -59,7 +64,7 @@ void setup() {
 }
 
 void loop() {
-  switch (state) {  
+  switch (state) {
     case show:
       fShow();
       break;
@@ -77,8 +82,8 @@ void loop() {
 
 void fShow() {
   //Create new maps
-  nvlMap = new char[3];
-  userMap = new char[3];
+  nvlMap = new char[lvlLeds];
+  userMap = new char[lvlLeds];
 
   for (int i = 0; i < lvlLeds; i++) {
     nvlMap[i] = random(0, LEDN);
@@ -87,7 +92,7 @@ void fShow() {
   //Showing alarm
   blinkAll(300, true);
   blinkAll(300, true);
-  
+
   //Show the map
   for (int i = 0; i < lvlLeds; i++) {
     MFS.write(i + 1);
@@ -103,7 +108,7 @@ void fWait() {
   int btnCount = 0;
 
   MFS.write("dale");
-  
+
   while (btnCount != lvlLeds) {
     if (btnLast == -1) {
       for (int i = 0; i < BTN; i++) {
@@ -139,7 +144,7 @@ void fWait() {
 
 void fOk() {
   MFS.write("uale");
-  
+
   lvlMsTime -= MSPENALTY;
   if (lvlMsTime < MSPENALTY) {
     //Reset
@@ -147,13 +152,13 @@ void fOk() {
   } else {
     lvlLeds++;
   }
-  
+
   state = show;
 }
 
 void fFail() {
   MFS.write("no");
-  
+
   blinkAll(1000, BEEP);
 
   reset();
@@ -167,10 +172,14 @@ void reset() {
 
 void blink(char led, uint16_t ms, int beep) {
   digitalWrite(led, LOW);
-  if (beep > 0) tone(BUZZER, beep, ms);
+  if (SOUND) {
+    tone(BUZZER, beep, ms);
+  }
   delay(ms);
   digitalWrite(led, HIGH);
-  if (beep > 0) digitalWrite(BUZZER, HIGH);
+  if (SOUND) {
+    digitalWrite(BUZZER, HIGH);
+  }
   delay(ms / 2);
 }
 
@@ -178,12 +187,15 @@ void blinkAll(uint16_t ms, int beep) {
   for (int i = 10; i < 14; i++) {
     digitalWrite(i, LOW);
   }
-  if (beep > 0) tone(BUZZER, beep, ms);
+  if (SOUND) {
+    tone(BUZZER, beep, ms);
+  }
   delay(ms);
-    for (int i = 10; i < 14; i++) {
+  for (int i = 10; i < 14; i++) {
     digitalWrite(i, HIGH);
   }
-  if (beep > 0) digitalWrite(BUZZER, HIGH);
+  if (SOUND) {
+    digitalWrite(BUZZER, HIGH);
+  }
   delay(ms);
 }
-
