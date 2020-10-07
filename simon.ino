@@ -17,9 +17,8 @@
 #include <TimerOne.h>
 #include <MultiFuncShield.h>
 
-// USER INFORMATION!!: CHANGE THIS FROM 1 (sound on) TO 0 (sound off) IN ORDER TO PLAY IN SILENCE.
-#define SOUND 0
 // Beep sound could be annoying depending on your buzzer, so it's up to you to disable beeping.
+#define SOUND 0
 
 //Feel free to change all these values :)
 const char LEDS[3] = {10, 11, 12};
